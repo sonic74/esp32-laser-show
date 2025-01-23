@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "ILDAFile.h"
-#include "SPIRenderer.h"
+#include "Rendering/DACRenderer.h"
+//#include "Rendering/SPIRenderer.h"
 
 static const char *TAG = "main";
+
+#include "sd_card_example_main.h"
 
 extern "C"
 {
@@ -19,20 +22,37 @@ extern "C"
 }
 
 static const char *files[] = {
+    /*"/spiffs/065.ild.gz",
+    "/spiffs/154.ild.gz",
+    "/spiffs/033.ild.gz",*/
+    "/spiffs/ildatest.ild.gz"/*,
     "/spiffs/Xwing.ild.gz",
     "/spiffs/LemmTumble.ild.gz",
     "/spiffs/Vader.ild.gz",
-    "/spiffs/Enterprise2.ild.gz"};
-static const int num_files = 4;
+    "/spiffs/Enterprise2.ild.gz",
+    "/spiffs/Ladylegs.ild.gz",
+    "/spiffs/BARNEY19.ILD.gz",
+    "/spiffs/CanadaFlag.ild.gz",
+    "/spiffs/CanGoose.ild.gz",
+    "/spiffs/HIPHOP18.ILD.gz",
+    "/spiffs/Horse.ILD.gz",
+    "/spiffs/Boxer.ILD.gz",*/
+    };
+static const int num_files = sizeof(files)/sizeof(files)[0];
 
 void app_main()
 {
   vTaskDelay(2000 / portTICK_PERIOD_MS);
 
+
+  sd_card_example_main();
+
+
+      ESP_LOGI(TAG, "num_files=%d", num_files);
   esp_vfs_spiffs_conf_t conf = {
       .base_path = "/spiffs",
       .partition_label = NULL,
-      .max_files = 5,
+      .max_files = num_files + 1,
       .format_if_mount_failed = false};
 
   esp_err_t ret = esp_vfs_spiffs_register(&conf);
@@ -65,11 +85,26 @@ void app_main()
   }
   esp_vfs_spiffs_unregister(NULL);
 
-  SPIRenderer *renderer = new SPIRenderer(ilda_files);
+  // Renderer *renderer = new SPIRenderer(ilda_files);
+  Renderer *renderer = new DACRenderer(ilda_files);
   renderer->start();
+
+  volatile int rendered_frames_old=renderer->rendered_frames;
+  volatile int transactions_old=renderer->transactions;
   // run forever
   while (true)
   {
-    vTaskDelay(600000 / portTICK_PERIOD_MS);
+    vTaskDelay(/*600000*/1000 / portTICK_PERIOD_MS);
+    ESP_LOGI(TAG, "Rendered frames %d, FPS %d, PPS %d, Free RAM %d, switches=%d, switches_off=%d, errors=%d",
+             renderer->rendered_frames,
+             renderer->rendered_frames-rendered_frames_old,
+             renderer->transactions-transactions_old,
+             esp_get_free_heap_size(),
+             renderer->switches,
+             renderer->switches_off,
+             renderer->errors
+             );
+    rendered_frames_old=renderer->rendered_frames;
+    transactions_old=renderer->transactions;
   }
 }

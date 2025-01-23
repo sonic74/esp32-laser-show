@@ -3,7 +3,6 @@
 #include "freertos/task.h"
 #include "SPIRenderer.h"
 #include "driver/spi_master.h"
-#include "driver/gpio.h"
 #include "driver/timer.h"
 
 #include "ILDAFile.h"
@@ -13,7 +12,6 @@
 #define PIN_NUM_CLK 26
 #define PIN_NUM_CS 27
 #define PIN_NUM_LDAC GPIO_NUM_33
-#define PIN_NUM_LASER GPIO_NUM_32
 
 void IRAM_ATTR spi_draw_timer(void *para)
 {
@@ -53,11 +51,11 @@ void IRAM_ATTR SPIRenderer::draw()
     // set the laser state
     if ((instruction.status_code & 0b01000000) == 0)
     {
-      gpio_set_level(PIN_NUM_LASER, 1);
+      set_laser(true);
     }
     else
     {
-      gpio_set_level(PIN_NUM_LASER, 0);
+      set_laser(false);
     }
     // load the DAC
     gpio_set_level(PIN_NUM_LDAC, 0);
@@ -78,15 +76,10 @@ void IRAM_ATTR SPIRenderer::draw()
         file_position = 0;
       }
     }
+
+    rendered_frames++;
   }
   timer_spinlock_give(TIMER_GROUP_0);
-}
-
-SPIRenderer::SPIRenderer(const std::vector<ILDAFile *> &ilda_files) : ilda_files(ilda_files)
-{
-  file_position = 0;
-  frame_position = 0;
-  draw_position = 0;
 }
 
 void spi_timer_setup(void *param)
@@ -118,9 +111,6 @@ void spi_timer_setup(void *param)
 
 void SPIRenderer::start()
 {
-  // setup the laser
-  gpio_set_direction(PIN_NUM_LASER, GPIO_MODE_OUTPUT);
-
   // setup the LDAC output
   gpio_set_direction(PIN_NUM_LDAC, GPIO_MODE_OUTPUT);
 
@@ -152,7 +142,9 @@ void SPIRenderer::start()
   printf("Ret code is %d\n", ret);
   assert(ret == ESP_OK);
 
-  // this will oin the timer task to core 1 - probably not needed if you aren't using WiFi etc..
+  // this will pin the timer task to core 1 - probably not needed if you aren't using WiFi etc..
   TaskHandle_t timer_setup_handle;
   xTaskCreatePinnedToCore(spi_timer_setup, "Draw Task", 4096, this, 0, &timer_setup_handle, 1);
+
+  Renderer::start();
 }

@@ -22,7 +22,7 @@ void ILDAFile::dump_header(const ILDA_Header_t &header)
 {
   char tmp[100];
   strncpy(tmp, header.ilda, 4);
-  tmp[5] = '\0';
+  tmp[4] = '\0';
   ESP_LOGI(TAG, "Header: %s", tmp);
   ESP_LOGI(TAG, "Format Code: %d", header.format);
   strncpy(tmp, header.frame_name, 8);
@@ -51,6 +51,7 @@ bool ILDAFile::read(const char *fname)
   // allocate space for the frames
   frames = (ILDA_Frame_t *)malloc(sizeof(ILDA_Frame_t) * header.total_frames);
   num_frames = header.total_frames;
+  if(header.format==5) num_frames--; // seems to include EoF marker
   // read in each frame
   for (int frame_idx = 0; frame_idx < header.total_frames; frame_idx++)
   {
@@ -62,7 +63,8 @@ bool ILDAFile::read(const char *fname)
       file.read((uint8_t *)(records + i), sizeof(ILDA_Record_t));
       records[i].x = ntohs(records[i].x);
       records[i].y = ntohs(records[i].y);
-      records[i].z = ntohs(records[i].z);
+      if(header.format==0) records[i].z = ntohs(records[i].z);
+      else if(header.format==5) records[i].status_code = records[i].z;
     }
     // read the next header
     file.read((uint8_t *)&header, sizeof(ILDA_Header_t));
