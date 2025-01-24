@@ -4,8 +4,8 @@
 #include "driver/gpio.h"
 #include <vector>
 
-//#define PIN_NUM_LASER GPIO_NUM_32
-#define PIN_NUM_LASER GPIO_NUM_19
+#define PIN_NUM_LASER GPIO_NUM_32
+//#define PIN_NUM_LASER GPIO_NUM_19
 //#define PIN_NUM_LASER GPIO_NUM_27
 
 class ILDAFile;

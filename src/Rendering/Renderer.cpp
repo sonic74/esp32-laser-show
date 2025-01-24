@@ -27,12 +27,14 @@ Renderer::Renderer(const std::vector<ILDAFile *> &ilda_files) : ilda_files(ilda_
 void Renderer::start()
 {
   // setup the laser output
-/*  gpio_reset_pin(PIN_NUM_LASER);
+  gpio_reset_pin(PIN_NUM_LASER);
   gpio_pad_select_gpio(PIN_NUM_LASER);
   if(gpio_set_direction(PIN_NUM_LASER, GPIO_MODE_OUTPUT) != ESP_OK) {
     errors++;
   }
-//gpio_dump_io_configuration(stdout, (1ULL << 4) | (1ULL << 18) | (1ULL << 26));*/
+//gpio_dump_io_configuration(stdout, (1ULL << 4) | (1ULL << 18) | (1ULL << 26));
+
+/*
     // Prepare and then apply the LEDC PWM timer configuration
     ledc_timer_config_t ledc_timer = {
         .speed_mode       = LEDC_MODE,
@@ -53,21 +55,22 @@ void Renderer::start()
         .duty           = 0,
         .hpoint         = 0
     };
-    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));*/
   
   ESP_LOGI(TAG, "started");
 }
 
 void IRAM_ATTR Renderer::set_laser(bool on)
 {
-  /*if(gpio_set_level(PIN_NUM_LASER, on ? 1 : 0) != ESP_OK) {
+  if(gpio_set_level(PIN_NUM_LASER, on ? 1 : 0) != ESP_OK) {
     errors++;
   } else {
     if(on) switches++;
     else switches_off++;
-  }*/
+  }
+ /*
     // Set duty to 50%
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, on ? LEDC_DUTY : 0));
     // Update duty to apply the new value
-    ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+    ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));*/
 }

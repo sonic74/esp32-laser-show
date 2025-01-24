@@ -45,7 +45,7 @@ void app_main()
   vTaskDelay(2000 / portTICK_PERIOD_MS);
 
 
-  sd_card_example_main();
+//  sd_card_example_main();
 
 
       ESP_LOGI(TAG, "num_files=%d", num_files);
