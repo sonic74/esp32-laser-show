@@ -39,7 +39,7 @@ void ILDAFile::dump_header(const ILDA_Header_t &header)
 
 bool ILDAFile::read(const char *fname)
 {
-  GZipFile file=new GZipFile();
+  GZipFile file;
   //HTTPFile file;
   if (!file.open(fname))
   {
