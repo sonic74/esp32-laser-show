@@ -1,6 +1,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 
+//#include "MyFile.h"
 #include "GZipFile.h"
 
 static const char *TAG = "gzip";

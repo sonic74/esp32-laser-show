@@ -4,17 +4,16 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "MyFile.h"
-#include "zlib.h"
+#include "esp_http_client.h"
 
-class GZipFile : public MyFile
+class HTTPFile : public MyFile
 {
 private:
-  FILE *fp;
-  z_stream stream;
-  uint8_t *in_buffer;
+  esp_http_client_handle_t client;
+//  uint8_t *in_buffer;
 
 public:
-  GZipFile();
+  HTTPFile();
   bool open(const char *path);
   int read(uint8_t *dst, size_t num_bytes);
   void close();

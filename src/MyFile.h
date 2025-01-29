@@ -3,18 +3,13 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "MyFile.h"
-#include "zlib.h"
 
-class GZipFile : public MyFile
+class MyFile
 {
-private:
-  FILE *fp;
-  z_stream stream;
-  uint8_t *in_buffer;
+//private:
 
 public:
-  GZipFile();
+  MyFile();
   bool open(const char *path);
   int read(uint8_t *dst, size_t num_bytes);
   void close();

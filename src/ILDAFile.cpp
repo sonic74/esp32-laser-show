@@ -4,6 +4,8 @@
 
 #include "ILDAFile.h"
 #include "GZipFile.h"
+#include "HTTPFile.h"
+//#include "MyFile.h"
 
 static const char *TAG = "ilda";
 
@@ -37,7 +39,8 @@ void ILDAFile::dump_header(const ILDA_Header_t &header)
 
 bool ILDAFile::read(const char *fname)
 {
-  GZipFile file;
+  GZipFile file=new GZipFile();
+  //HTTPFile file;
   if (!file.open(fname))
   {
     return false;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ILDAFile.h"
+#include "WiFi.h"
 #include "Rendering/DACRenderer.h"
 //#include "Rendering/SPIRenderer.h"
 
@@ -22,11 +23,11 @@ extern "C"
 }
 
 static const char *files[] = {
-    /*"/spiffs/065.ild.gz",
+/*    "/spiffs/065.ild.gz",
     "/spiffs/154.ild.gz",
     "/spiffs/033.ild.gz",*/
-    "/spiffs/ildatest.ild.gz"/*,
-    "/spiffs/Xwing.ild.gz",
+    "/spiffs/ildatest.ild.gz"/*,*/
+/*    "/spiffs/Xwing.ild.gz",
     "/spiffs/LemmTumble.ild.gz",
     "/spiffs/Vader.ild.gz",
     "/spiffs/Enterprise2.ild.gz",
@@ -37,6 +38,7 @@ static const char *files[] = {
     "/spiffs/HIPHOP18.ILD.gz",
     "/spiffs/Horse.ILD.gz",
     "/spiffs/Boxer.ILD.gz",*/
+//    "https://www.laserfx.com/Backstage.LaserFX.com/Systems/ildatest.ild"
     };
 static const int num_files = sizeof(files)/sizeof(files)[0];
 
@@ -46,6 +48,9 @@ void app_main()
 
 
 //  sd_card_example_main();
+//Guru Meditation Error: Core  1 panic'ed (Cache disabled but cached memory region accessed).
+wifi_init_sta();
+start_webserver();
 
 
       ESP_LOGI(TAG, "num_files=%d", num_files);
