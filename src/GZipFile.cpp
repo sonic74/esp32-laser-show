@@ -15,7 +15,7 @@ bool GZipFile::open(const char *path)
   fp = fopen(path, "rb");
   if (fp == NULL)
   {
-    ESP_LOGE(TAG, "Failed to open file");
+    ESP_LOGE(TAG, "Failed to open file %s", path);
     return false;
   }
   // read a chunk of data from the file
