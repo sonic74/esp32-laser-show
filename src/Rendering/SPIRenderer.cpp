@@ -7,11 +7,10 @@
 
 #include "ILDAFile.h"
 
-#define PIN_NUM_MISO -1
-#define PIN_NUM_MOSI 25
-#define PIN_NUM_CLK 26
-#define PIN_NUM_CS 27
-#define PIN_NUM_LDAC GPIO_NUM_33
+#define PIN_NUM_MOSI GPIO_NUM_23
+#define PIN_NUM_CLK GPIO_NUM_18
+#define PIN_NUM_CS GPIO_NUM_27
+#define PIN_NUM_LDAC GPIO_NUM_19
 
 void IRAM_ATTR spi_draw_timer(void *para)
 {
@@ -31,8 +30,8 @@ void IRAM_ATTR SPIRenderer::draw()
   {
     const ILDA_Record_t &instruction = ilda_files[file_position]->frames[frame_position].records[draw_position];
 
-    int y = 2048 + (instruction.x * 1024) / 32768;
-    int x = 2048 + (instruction.y * 1024) / 32768;
+    int y = /*4095 -*/ (2048 + (instruction.x * 2048) / 32768);
+    int x = 4095 - (2048 + (instruction.y * 2048) / 32768);
 
     // channel A
     spi_transaction_t t1 = {};
@@ -118,7 +117,7 @@ void SPIRenderer::start()
   esp_err_t ret;
   spi_bus_config_t buscfg = {
       .mosi_io_num = PIN_NUM_MOSI,
-      .miso_io_num = PIN_NUM_MISO,
+      .miso_io_num = -1,
       .sclk_io_num = PIN_NUM_CLK,
       .quadwp_io_num = -1,
       .quadhd_io_num = -1,
@@ -128,19 +127,15 @@ void SPIRenderer::start()
       .address_bits = 0,
       .dummy_bits = 0,
       .mode = 0,
-      .clock_speed_hz = 80000000,
+      .clock_speed_hz = SPI_MASTER_FREQ_8M,
       .spics_io_num = PIN_NUM_CS, //CS pin
       .flags = SPI_DEVICE_NO_DUMMY,
       .queue_size = 2,
   };
   //Initialize the SPI bus
-  ret = spi_bus_initialize(HSPI_HOST, &buscfg, 1);
-  assert(ret == ESP_OK);
+  ESP_ERROR_CHECK(spi_bus_initialize(HSPI_HOST, &buscfg, /*1*/3));
   //Attach the SPI device
-  ret = spi_bus_add_device(HSPI_HOST, &devcfg, &spi);
-  printf("Error message %s\n", esp_err_to_name(ret));
-  printf("Ret code is %d\n", ret);
-  assert(ret == ESP_OK);
+  ESP_ERROR_CHECK(spi_bus_add_device(HSPI_HOST, &devcfg, &spi));
 
   // this will pin the timer task to core 1 - probably not needed if you aren't using WiFi etc..
   TaskHandle_t timer_setup_handle;

@@ -10,8 +10,8 @@
 
 #include "ILDAFile.h"
 #include "WiFi.h"
-#include "Rendering/DACRenderer.h"
-//#include "Rendering/SPIRenderer.h"
+//#include "Rendering/DACRenderer.h"
+#include "Rendering/SPIRenderer.h"
 
 static const char *TAG = "main";
 
@@ -89,8 +89,8 @@ start_webserver();*/
   }
   esp_vfs_spiffs_unregister(NULL);
 
-  // Renderer *renderer = new SPIRenderer(ilda_files);
-  Renderer *renderer = new DACRenderer(ilda_files);
+  Renderer *renderer = new SPIRenderer(ilda_files);
+  //Renderer *renderer = new DACRenderer(ilda_files);
   renderer->start();
 
   volatile int rendered_frames_old=renderer->rendered_frames;
